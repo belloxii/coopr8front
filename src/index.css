@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Design tokens. The Tailwind config maps semantic colours (bg-card,
+   text-foreground, border-border, bg-primary, …) to these HSL variables, so
+   flipping the `.dark` class on <html> re-themes the whole app. Values are
+   raw "H S% L%" triples (consumed as hsl(var(--token))).
+   Brand primary stays green in both themes.
+--------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    /* Soft neutral canvas (not pure white) so the white bg-card panels read as
+       distinct, floating surfaces instead of blending into the page. */
+    --background: 210 40% 96%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 142 71% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    /* Deeper than the border so a filled field is a clearly darker "well" on the
+       white card, distinct from the panel and the date-filter row around it. */
+    --input: 214 30% 86%;
+    --ring: 142 71% 40%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 96%;
+
+    --card: 222 40% 12%;
+    --card-foreground: 210 40% 96%;
+
+    --popover: 222 40% 12%;
+    --popover-foreground: 210 40% 96%;
+
+    --primary: 142 65% 45%;
+    --primary-foreground: 222 47% 8%;
+
+    --secondary: 217 33% 20%;
+    --secondary-foreground: 210 40% 96%;
+
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 22%;
+    --accent-foreground: 210 40% 96%;
+
+    --destructive: 0 63% 50%;
+    --destructive-foreground: 210 40% 96%;
+
+    --border: 217 33% 24%;
+    --input: 217 33% 24%;
+    --ring: 142 65% 45%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  /* Tell the browser which scheme is active so native controls (date
+     pickers, selects, checkboxes, scrollbars) render themselves in the
+     matching theme instead of staying white in dark mode. */
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+
+  /* Form controls that only set a border (no bg utility) would otherwise keep
+     the browser default white fill in dark mode. Anchor them to the --input
+     token (a field "well"), NOT --card: Tailwind v3 emits flat CSS, so this
+     `.dark input` rule (specificity 0,1,1) outranks the `.bg-input` utility
+     (0,1,0) and wins. Painting it --card made every dark field the same colour
+     as the panel behind it — invisible. --input keeps fields a clear step above
+     the card in both themes. */
+  .dark input,
+  .dark select,
+  .dark textarea {
+    background-color: hsl(var(--input));
+    color: hsl(var(--foreground));
+  }
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* MUI themes its own fields (an outlined input sitting on a rounded root).
+     The native dark-fill rule above would paint a hard-edged rectangle inside
+     that rounded outline — the "awkward square background" on dark mode. Keep
+     MUI's inner input transparent so the field reads as one clean rounded
+     control regardless of the surface (Dialog paper or bg-card) behind it. */
+  .dark .MuiInputBase-input {
+    background-color: transparent;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.hideScrollBar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Indeterminate progress bar. The batch import server processes the whole file
+   in one request with no per-row events, so once the bytes are uploaded there
+   is no honest percentage to show — a sliding segment says "working" without
+   faking a count. */
+@keyframes indeterminate-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+.animate-indeterminate {
+  animation: indeterminate-slide 1.2s ease-in-out infinite;
+}
