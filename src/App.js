@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
 import Authentication from './Components/Authentication/Authentication';
 import { useEffect, useState } from 'react';
@@ -16,6 +16,7 @@ import PlatformLogin from './Components/Platform/PlatformLogin';
 import PlatformLayout from './Components/Platform/PlatformLayout';
 import PlatformOrganizations from './Components/Platform/PlatformOrganizations';
 import PlatformPlans from './Components/Platform/PlatformPlans';
+import LandingPage from './Components/Landing/LandingPage';
 
 function App() {
   const [loading, setLoading] = useState(true); // State to manage loading
@@ -63,6 +64,21 @@ function App() {
         </div>
       ) : (
         <Routes>
+          {/* Base URL: Landing Page for visitors; dashboard redirect if already logged in */}
+          <Route
+            path='/'
+            element={
+              auth.user?.user ? (
+                auth.user?.user?.role === "ROLE_ADMIN" ? (
+                  <Navigate to="/admin/home" replace />
+                ) : (
+                  <Navigate to="/home" replace />
+                )
+              ) : (
+                <LandingPage />
+              )
+            }
+          />
           {/* Platform super admin routes */}
           <Route path='/platform/login' element={<PlatformLogin />} />
           <Route
