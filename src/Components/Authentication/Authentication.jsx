@@ -71,11 +71,52 @@ const Authentication = () => {
   const loginPath = slug ? `/o/${slug}/login` : "/login";
   const showTenant = Boolean(organization?.name) && !notFound;
 
+  // Set document title according to tenant branding and restore on unmount
+  useEffect(() => {
+    const originalTitle = document.title;
+    if (showTenant && organization?.name) {
+      const action = path.endsWith("/signup")
+        ? "Sign Up"
+        : path.endsWith("/forgot-password")
+        ? "Reset Password"
+        : "Sign In";
+      document.title = `${organization.name} - ${action} | ${PLATFORM_NAME}`;
+    }
+    return () => {
+      document.title = originalTitle;
+    };
+  }, [showTenant, organization?.name, path]);
+
+  // If a tenant is active, brand the carousel slides with the cooperative name
+  const tenantName = showTenant ? organization.name : null;
+  const slideImages = images.map((image, index) => {
+    if (!tenantName) return image;
+    if (index === 0) {
+      return {
+        ...image,
+        title: `Welcome to ${tenantName}`,
+        description: `Secure, fast, and reliable cooperative services at your fingertips.`,
+      };
+    }
+    if (index === 1) {
+      return {
+        ...image,
+        title: "Loans Made Simple",
+        description: `Flexible loan management tailored to how ${tenantName} operates.`,
+      };
+    }
+    return {
+      ...image,
+      title: "Save Smart, Build Wealth",
+      description: `Help every member save consistently and watch ${tenantName}'s financial future flourish.`,
+    };
+  });
+
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground">
       {/* Left Side Carousel */}
       <div className="hidden lg:flex w-1/2 relative overflow-hidden">
-        {images.map((image, index) => (
+        {slideImages.map((image, index) => (
           <div
             key={index}
             className={`absolute w-full h-full transition-opacity duration-1000 ease-in-out ${
@@ -104,12 +145,24 @@ const Authentication = () => {
       <div className="w-full lg:w-1/2 flex flex-col h-screen overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center mt-5 mx-4 sm:mx-6">
-          <Link to={loginPath}>
-            <p className="text-2xl pr-1 font-bold italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-black dark:to-white relative">
-              {PLATFORM_NAME}
-              <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-green-500 to-black dark:to-white rounded-full" />
-            </p>
-          </Link>
+          {showTenant ? (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span>Powered by</span>
+              <Link
+                to="/"
+                className="font-bold italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-foreground hover:opacity-80"
+              >
+                {PLATFORM_NAME}
+              </Link>
+            </div>
+          ) : (
+            <Link to={loginPath}>
+              <p className="text-2xl pr-1 font-bold italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-foreground relative">
+                {PLATFORM_NAME}
+                <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-primary to-foreground rounded-full" />
+              </p>
+            </Link>
+          )}
           <div className="flex items-center gap-3">
             <Tooltip title={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
               <IconButton onClick={toggle} color="inherit" aria-label="Toggle dark mode">
@@ -126,7 +179,7 @@ const Authentication = () => {
                 href="https://wa.me/2348101237991?text=Welcome%20to%20Invo%20Technology%20Limited,%20please%20feel%20free%20to%20make%20your%20enquiries.%0A%0AKindly%20provide%20your%20name%3A"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-green-700 hover:underline"
+                className="text-primary hover:underline font-medium"
               >
                 {PLATFORM_VENDOR}
               </a>
@@ -136,26 +189,38 @@ const Authentication = () => {
 
         {/* The cooperative named in the URL, if any -- otherwise the platform tagline. */}
         {showTenant ? (
-          <div className="flex flex-col items-center mt-3 px-4">
-            {organization.logoUrl && (
+          <div className="flex flex-col items-center mt-4 px-4 text-center">
+            {organization.logoUrl ? (
               <img
                 src={organization.logoUrl}
                 alt={organization.name}
-                className="h-14 w-auto object-contain mb-2"
+                className="h-16 max-w-[220px] object-contain mb-3"
                 loading="lazy"
               />
+            ) : (
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-3">
+                <span className="text-xl font-bold text-primary">
+                  {organization.name?.slice(0, 2)?.toUpperCase() || "CO"}
+                </span>
+              </div>
             )}
-            <p className="text-center text-xl sm:text-2xl font-bold tracking-normal text-foreground font-serif">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-serif">
               {organization.name}
-            </p>
-            <p className="text-center text-sm text-muted-foreground mt-1">
-              Sign in to your cooperative
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {path.endsWith("/signup")
+                ? "Create your member account"
+                : path.endsWith("/forgot-password")
+                ? "Reset your account password"
+                : "Sign in to your cooperative"}
             </p>
           </div>
         ) : (
-          <p className="text-center text-xl sm:text-2xl font-bold tracking-normal text-muted-foreground mt-3 px-4 font-serif italic">
-            {PLATFORM_TAGLINE}
-          </p>
+          <div className="flex flex-col items-center mt-4 px-4 text-center">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-normal text-muted-foreground font-serif italic">
+              {PLATFORM_TAGLINE}
+            </h1>
+          </div>
         )}
 
         {/* Form */}

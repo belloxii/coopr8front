@@ -127,7 +127,7 @@ const SaveModal = ({ open, handleClose }) => {
             {!isEditing && (
               <button
                 onClick={handlePaystackPayment}
-                className="cursor-pointer flex justify-center items-center bg-green-600 text-white rounded-full px-5 py-3 font-semibold w-full"
+                className="cursor-pointer flex justify-center items-center bg-primary text-primary-foreground hover:opacity-90 rounded-full px-5 py-3 font-semibold w-full transition"
                 disabled={isLoading}
               >
                 {isLoading ? 'Initializing...' : 'Save Now'}

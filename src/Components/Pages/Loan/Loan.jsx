@@ -84,7 +84,7 @@ const Loan = () => {
           <p className="text-4xl font-bold text-foreground mb-5">Loans</p>
           <button
             onClick={() => setShowModal(true)}
-            className="h-12 px-10 py-2 bg-green-500 text-white text-xl shadow-2xl rounded-full font-semibold hover:bg-green-700"
+            className="h-12 px-10 py-2 bg-primary text-primary-foreground text-xl shadow-2xl rounded-full font-semibold hover:opacity-90 transition"
           >
             Apply Loan
           </button>
@@ -98,8 +98,8 @@ const Loan = () => {
               onClick={() => setActiveTab(tab)}
               className={`-skew-y-6 text-sm sm:text-base px-2 py-3 rounded-full font-semibold shadow transition duration-200 ${
                 activeTab === tab
-                  ? "bg-green-500 text-white shadow-md"
-                  : "bg-muted text-foreground hover:bg-green-700 hover:text-white"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "bg-muted text-foreground hover:bg-primary/80 hover:text-primary-foreground"
               }`}
             >
               {loanTypes[tab].title} ({loanCounts[tab]})

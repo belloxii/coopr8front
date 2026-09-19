@@ -113,7 +113,7 @@ const HomePage = () => {
                 <div
                   key={item.title}
                   className={`cursor-pointer flex space-x-3 items-center px-5 py-2 rounded-3xl transition duration-200 ${
-                    isActive ? "bg-green-400 text-white shadow-2xl" : "hover:bg-muted"
+                    isActive ? "bg-primary text-primary-foreground shadow-2xl" : "hover:bg-muted"
                   }`}
                   onClick={() =>
                     item.title === "Profile"

@@ -187,8 +187,8 @@ const generateInstallmentOptions = () => {
           <button
             disabled={!currentLoan || !amount || !!errorMsg || loading}
             onClick={handlePay}
-            className={`w-full bg-green-700 text-white font-bold p-4 rounded-full ${
-              loading || errorMsg ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-800'
+            className={`w-full bg-primary text-primary-foreground font-bold p-4 rounded-full transition ${
+              loading || errorMsg ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
             }`}
           >
             {loading ? 'Initializing...' : 'Repay Now'}

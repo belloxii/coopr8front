@@ -135,7 +135,7 @@ const Repayments = () => {
           ) : (
             <button
               onClick={() => setShowModal(true)}
-              className="bg-green-600 text-white hover:bg-green-700 text-sm sm:text-base p-3 sm:px-4 rounded-full font-semibold shadow transition"
+              className="bg-primary text-primary-foreground hover:opacity-90 text-sm sm:text-base p-3 sm:px-4 rounded-full font-semibold shadow transition"
             >
               Make Repayment
             </button>
@@ -153,7 +153,7 @@ const Repayments = () => {
             <div>
               <div className="ml-3">Loan Type:</div>
               <select
-                className="bg-input border-0 rounded-xl py-2 px-6 text-foreground outline-none transition focus:ring-2 focus:ring-green-600/50"
+                className="bg-input border-0 rounded-xl py-2 px-6 text-foreground outline-none transition focus:ring-2 focus:ring-primary/50"
                 value={filterLoanType}
                 onChange={(e) => setFilterLoanType(e.target.value)}>
                 <option value="">All</option>
@@ -167,7 +167,7 @@ const Repayments = () => {
               <div className="ml-3">Start Date:</div>
               <input
                 type="date"
-                className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-green-600/50"
+                className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-primary/50"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
               />
@@ -177,7 +177,7 @@ const Repayments = () => {
               <div className="ml-3">End Date:</div>
               <input
                 type="date"
-                className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-green-600/50"
+                className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-primary/50"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
               />

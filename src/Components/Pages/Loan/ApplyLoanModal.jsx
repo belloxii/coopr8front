@@ -223,7 +223,7 @@ const handleInputChange = (e) => {
                   className={`w-[40%] px-4 py-2 rounded-xl border-0 bg-input text-foreground outline-none transition focus:ring-2 ${
                     !guarantorValid[`g${g}`] && formData[`guarantor${g}`]
                       ? "ring-2 ring-red-500"
-                      : "focus:ring-green-600/50"
+                      : "focus:ring-primary/50"
                   }`}/>
                 <input
                   type="text"
@@ -245,7 +245,7 @@ const handleInputChange = (e) => {
             <button
               type="button"
               onClick={nextStep}
-              className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700"
+              className="bg-primary text-primary-foreground px-6 py-2 rounded-full hover:opacity-90"
             >
               Next
             </button>
@@ -285,10 +285,10 @@ const handleInputChange = (e) => {
             <button
               type="submit"
               disabled={loading}
-              className={`text-white px-6 py-2 rounded-full ${
+              className={`text-primary-foreground px-6 py-2 rounded-full ${
                 loading
-                  ? "bg-green-300 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-700"
+                  ? "bg-primary/50 cursor-not-allowed"
+                  : "bg-primary hover:opacity-90"
               }`}
             >
               {loading ? (

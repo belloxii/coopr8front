@@ -76,7 +76,7 @@ const AddShareModal = ({ open, onClose, email }) => {
         <button
           onClick={handlePayment}
           disabled={isDisabled}
-          className="w-full bg-green-500 hover:bg-green-700 text-white font-bold p-4 rounded-full transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-primary hover:opacity-90 text-primary-foreground font-bold p-4 rounded-full transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Processing..." : "Add Shares"}
         </button>

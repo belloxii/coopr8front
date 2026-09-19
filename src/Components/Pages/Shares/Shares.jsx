@@ -140,7 +140,7 @@ const Shares = () => {
             {!salaryDeduction && (
               <button
                 onClick={() => setOpenAddModal(true)}
-                className="py-2 px-4 bg-green-600 text-white text-lg rounded-full font-semibold shadow hover:bg-green-700 transition"
+                className="py-2 px-4 bg-primary text-primary-foreground text-lg rounded-full font-semibold shadow hover:opacity-90 transition"
               >Add Share</button>
             )}
             <button
@@ -159,7 +159,7 @@ const Shares = () => {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="bg-input border-0 rounded-xl py-2 px-6 text-foreground outline-none transition focus:ring-2 focus:ring-green-600/50"
+                className="bg-input border-0 rounded-xl py-2 px-6 text-foreground outline-none transition focus:ring-2 focus:ring-primary/50"
               >
                 <option value="all">All</option>
                 <option value="credit">Credit</option>
@@ -172,7 +172,7 @@ const Shares = () => {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-green-600/50"
+                className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div>
@@ -181,7 +181,7 @@ const Shares = () => {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-green-600/50"
+                className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <button

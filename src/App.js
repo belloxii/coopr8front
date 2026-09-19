@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Authentication from './Components/Authentication/Authentication';
 import React, { useEffect, useState, Suspense, lazy } from 'react';
@@ -12,6 +12,8 @@ import { Analytics } from "@vercel/analytics/react";
 import Skeleton from '@mui/material/Skeleton'; // Import MUI Skeleton
 import { PLATFORM_NAME } from './config/branding';
 import { useOrganization } from './Utils/useOrganization';
+import { usePublicOrganization } from './Utils/usePublicOrganization';
+import { useApplyTenantTheme } from './Utils/useApplyTenantTheme';
 const PlatformLogin = lazy(() => import('./Components/Platform/PlatformLogin'));
 const PlatformLayout = lazy(() => import('./Components/Platform/PlatformLayout'));
 const PlatformOrganizations = lazy(() => import('./Components/Platform/PlatformOrganizations'));
@@ -23,7 +25,27 @@ function App() {
   const jwt = sessionStorage.getItem("jwt");
   const { auth } = useSelector(store => store);
   const dispatch = useDispatch();
-  const { name: orgName, isLoaded: orgLoaded } = useOrganization();
+  const isAuthenticated = Boolean(auth.user?.user);
+  const location = useLocation();
+  const isPlatformRoute = location.pathname.startsWith('/platform');
+  const slugMatch = location.pathname.match(/^\/o\/([^/]+)/);
+  const routeSlug = slugMatch ? slugMatch[1] : null;
+
+  const { name: orgName, isLoaded: orgLoaded, primaryColor: authPrimaryColor } = useOrganization();
+  const { organization: publicOrg } = usePublicOrganization(routeSlug);
+
+
+  // Tenant branding applies when authenticated inside a tenant or visiting /o/:slug.
+  // Platform admin routes always stay neutral default theme.
+  const effectivePrimaryColor = isPlatformRoute
+    ? null
+    : isAuthenticated
+    ? authPrimaryColor
+    : routeSlug
+    ? publicOrg?.primaryColor
+    : null;
+
+  useApplyTenantTheme(effectivePrimaryColor);
 
   useEffect(() => {
     console.log("Fetching user profile...");
@@ -41,7 +63,6 @@ function App() {
   // Tenant branding is fetched once, from the authenticated endpoint that derives the
   // organization from the JWT. Signed-out visitors see neutral COOPR8 branding because
   // no organization is known before authentication.
-  const isAuthenticated = Boolean(auth.user?.user);
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(getCurrentOrganization());
@@ -49,9 +70,12 @@ function App() {
   }, [dispatch, isAuthenticated]);
 
   // Inside a tenant the tab shows the cooperative's name; outside it, the platform's.
+  // When visiting /o/:slug auth pages, Authentication.jsx sets its own specific title.
   useEffect(() => {
-    document.title = isAuthenticated && orgLoaded ? orgName : PLATFORM_NAME;
-  }, [isAuthenticated, orgLoaded, orgName]);
+    if (!routeSlug) {
+      document.title = isAuthenticated && orgLoaded ? orgName : PLATFORM_NAME;
+    }
+  }, [isAuthenticated, orgLoaded, orgName, routeSlug]);
 
   console.log("auth.user", auth.user);
 

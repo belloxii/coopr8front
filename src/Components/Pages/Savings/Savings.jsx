@@ -161,7 +161,7 @@ const Savings = () => {
           ) : (
             <button
               onClick={() => setShowModal(true)}
-              className="py-2 px-4 bg-green-600 text-white text-lg rounded-full font-semibold shadow hover:bg-green-700 transition"
+              className="py-2 px-4 bg-primary text-primary-foreground text-lg rounded-full font-semibold shadow hover:opacity-90 transition"
             >
               Save Now
             </button>
@@ -184,7 +184,7 @@ const Savings = () => {
       type="date"
       value={startDate}
       onChange={(e) => setStartDate(e.target.value)}
-      className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-green-600/50"/>
+      className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-primary/50"/>
     </div>
     <div>
       <div className="ml-3">end date</div>
@@ -192,7 +192,7 @@ const Savings = () => {
         type="date"
         value={endDate}
         onChange={(e) => setEndDate(e.target.value)}
-        className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-green-600/50"/>
+        className="bg-input border-0 rounded-xl py-2 px-4 text-foreground outline-none transition focus:ring-2 focus:ring-primary/50"/>
       </div>
 
        <button

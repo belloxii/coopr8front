@@ -1,41 +1,63 @@
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { NEUTRAL_ORGANIZATION_NAME, PLATFORM_NAME } from "../config/branding";
 
+const ACTIVE_BRAND_KEY = "coopr8_cached_active_brand";
+
+const getCachedActiveBrand = () => {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(ACTIVE_BRAND_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setCachedActiveBrand = (org) => {
+  if (!org || typeof window === "undefined") return;
+  try {
+    const safe = {
+      id: org.id,
+      name: org.name,
+      legalName: org.legalName,
+      slug: org.slug,
+      logoUrl: org.logoUrl,
+      ledgerPrefix: org.ledgerPrefix,
+      primaryColor: org.primaryColor,
+      secondaryColor: org.secondaryColor,
+      contactEmail: org.contactEmail,
+      contactPhone: org.contactPhone,
+      website: org.website,
+      address: org.address,
+      planCode: org.planCode,
+      aiScanningEntitled: org.aiScanningEntitled,
+      ecommerceEntitled: org.ecommerceEntitled,
+    };
+    window.localStorage.setItem(ACTIVE_BRAND_KEY, JSON.stringify(safe));
+  } catch {
+    // Ignore storage quota errors
+  }
+};
+
 /**
- * The signed-in member's organization branding, with safe fallbacks.
- *
- * Read tenant identity through this hook instead of calling the organization API from
- * individual components: it keeps one source of truth (the Redux `organization` slice,
- * populated once from the authenticated endpoint) and guarantees the fallbacks are
- * applied consistently.
- *
- * Fallbacks never name a specific cooperative:
- *   - no name  -> the neutral "Organization"
- *   - no logo  -> `logoUrl` is null and `showPlatformLogoFallback` is true, so the
- *                 caller renders COOPR8 platform branding
- *   - no theme -> `primaryColor`/`secondaryColor` are null; keep the existing styling
- *
- * @returns {{
- *   organization: object|null,
- *   name: string,
- *   legalName: string,
- *   logoUrl: string|null,
- *   ledgerPrefix: string,
- *   primaryColor: string|null,
- *   secondaryColor: string|null,
- *   contactEmail: string,
- *   contactPhone: string,
- *   website: string,
- *   address: string,
- *   isLoaded: boolean,
- *   loading: boolean,
- *   showPlatformLogoFallback: boolean,
- *   initials: string,
- * }}
+ * The signed-in member's organization branding, with safe fallbacks and localStorage caching
+ * to prevent branding flash on reload.
  */
 export const useOrganization = () => {
   const { organization: organizationState } = useSelector((store) => store);
-  const organization = organizationState?.organization || null;
+  const reduxOrg = organizationState?.organization || null;
+
+  // When Redux loads the real organization, update the local cache
+  useEffect(() => {
+    if (reduxOrg) {
+      setCachedActiveBrand(reduxOrg);
+    }
+  }, [reduxOrg]);
+
+  // Fall back to cached brand until Redux organization loads
+  const cachedBrand = getCachedActiveBrand();
+  const organization = reduxOrg || cachedBrand || null;
 
   const text = (value) => (typeof value === "string" && value.trim() ? value.trim() : "");
 
@@ -65,12 +87,9 @@ export const useOrganization = () => {
     isLoaded: Boolean(organization),
     loading: Boolean(organizationState?.loading),
 
-    // True when there is no tenant logo to show: fall back to COOPR8, never to a
-    // hardcoded cooperative mark.
     showPlatformLogoFallback: !logoUrl,
     platformName: PLATFORM_NAME,
 
-    // Compact monogram for avatars/sidebars when there is no logo image.
     initials: name
       .split(/\s+/)
       .filter(Boolean)

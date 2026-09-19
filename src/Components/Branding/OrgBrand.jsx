@@ -14,7 +14,7 @@ const OrgBrand = ({
   onClick,
   className = "",
   textClassName = "text-3xl",
-  gradientClassName = "from-green-500 to-black dark:to-white",
+  gradientClassName = "from-primary to-foreground",
 }) => {
   const { name, logoUrl, isLoaded, platformName } = useOrganization();
 
