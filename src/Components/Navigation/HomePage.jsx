@@ -32,7 +32,7 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { name: orgName, isLoaded: orgLoaded, platformName, contactPhone } = useOrganization();
+  const { name: orgName, isLoaded: orgLoaded, platformName, contactPhone, ecommerceEntitled } = useOrganization();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [navValue, setNavValue] = useState(0);
@@ -46,7 +46,10 @@ const HomePage = () => {
     }
   }, [auth?.user?.requiresPasswordChange]);
 
-  const filteredMenu = navigationMenu.filter((item) => item.title !== "Profile");
+  const visibleMenu = navigationMenu.filter(
+    (item) => item.title !== "Products" || ecommerceEntitled
+  );
+  const filteredMenu = visibleMenu.filter((item) => item.title !== "Profile");
 
   useEffect(() => {
     const currentRoute = filteredMenu.findIndex(item => 
@@ -103,7 +106,7 @@ const HomePage = () => {
           <OrgBrand className="mb-8 ml-3" onClick={() => navigate("/home")} />
 
           <div className="space-y-2">
-            {navigationMenu.map((item) => {
+            {visibleMenu.map((item) => {
               const isActive = location.pathname.startsWith(item.path);
 
               return (
@@ -186,7 +189,7 @@ const HomePage = () => {
             <Route path="/loans/:loanId" element={<LoanDetails />} />
             <Route path="/repayments" element={<Repayments />} />
             <Route path="/shares" element={<Shares />} />
-            <Route path="/products" element={<Products />} />
+            <Route path="/products" element={ecommerceEntitled ? <Products /> : <Dashboard />} />
             <Route path="/profile/:userId" element={<Profile />} />
           </Routes>
         </div>

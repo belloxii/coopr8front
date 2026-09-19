@@ -21,18 +21,23 @@ import AdminLoanDetails from "../Pages/Loan/AdminLoanDetails";
 import AdminProfile from "../Pages/AdminUsers/Profile/AdminProfile";
 import OrgBrand from "../../Branding/OrgBrand";
 import { PLATFORM_ATTRIBUTION } from "../../../config/branding";
+import { useOrganization } from "../../../Utils/useOrganization";
 
 const AdminHomePage = () => {
   const { auth } = useSelector((store) => store);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { ecommerceEntitled } = useOrganization();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [navValue, setNavValue] = useState(0);
   const open = Boolean(anchorEl);
 
-  const filteredMenu = adminNavigationMenu.filter((item) => item.title !== "Profile");
+  const visibleAdminMenu = adminNavigationMenu.filter(
+    (item) => item.title !== "Products" || ecommerceEntitled
+  );
+  const filteredMenu = visibleAdminMenu.filter((item) => item.title !== "Profile");
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -43,11 +48,11 @@ const AdminHomePage = () => {
 
   // Sync BottomNav with location
   useEffect(() => {
-    const index = adminNavigationMenu.findIndex((item) =>
+    const index = filteredMenu.findIndex((item) =>
       location.pathname.startsWith(item.path)
     );
     setNavValue(index >= 0 ? index : 0);
-  }, [location.pathname]);
+  }, [location.pathname, filteredMenu]);
 
   return (
     <div className="flex min-h-screen ">
@@ -62,7 +67,7 @@ const AdminHomePage = () => {
               />
     
               <div className="space-y-2">
-                {adminNavigationMenu.map((item) => {
+                {visibleAdminMenu.map((item) => {
                   const isActive = location.pathname.startsWith(item.path);
     
                   return (
@@ -138,7 +143,7 @@ const AdminHomePage = () => {
             <Route path="/savings" element={<Savings />} />
             <Route path="/loans" element={<Loan />} />
             <Route path="/repayments" element={<Repayments />} />
-            <Route path="/products" element={<Products />} />
+            <Route path="/products" element={ecommerceEntitled ? <Products /> : <AdminDashboard />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/purchases" element={<Purchases />} />
             <Route path="/shares" element={<Shares />} />

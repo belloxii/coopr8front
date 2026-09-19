@@ -281,8 +281,14 @@ export default function AddUser() {
   const [activeTab, setActiveTab] = useState("single");
 
   // Downloads carrying this cooperative's data are named after it.
-  const { name: orgName } = useOrganization();
+  const { name: orgName, aiScanningEntitled } = useOrganization();
   const [singleUser, setSingleUser] = useState(emptySingleUser);
+
+  useEffect(() => {
+    if (!aiScanningEntitled && activeTab === "forms") {
+      setActiveTab("single");
+    }
+  }, [aiScanningEntitled, activeTab]);
   const [singleLoading, setSingleLoading] = useState(false);
   const [singleError, setSingleError] = useState("");
   const [passportFile, setPassportFile] = useState(null);
@@ -819,51 +825,55 @@ export default function AddUser() {
           <button onClick={() => setActiveTab("single")} className={tabClass("single")}>Single user</button>
           <button onClick={() => setActiveTab("bulk")} className={tabClass("bulk")}>Batch import</button>
           <button onClick={() => setActiveTab("normalize")} className={tabClass("normalize")}>Normalize file</button>
-          <button onClick={() => setActiveTab("forms")} className={tabClass("forms")}>Forms → Excel</button>
+          {aiScanningEntitled && (
+            <button onClick={() => setActiveTab("forms")} className={tabClass("forms")}>Forms → Excel</button>
+          )}
         </div>
 
         {/* ---------------------------------------------------------------- Single */}
         {activeTab === "single" && (
           <form onSubmit={handleSingleSubmit} className="space-y-6">
             {/* Hardcopy scan — prefill the whole form from a photo/scan of the paper form. */}
-            <fieldset className="space-y-3 rounded-xl bg-green-50 p-4 dark:bg-green-950/40">
-              <legend className="px-1 text-sm font-bold uppercase tracking-wide text-green-800 dark:text-green-200">Scan a hardcopy form</legend>
-              <p className="text-sm text-muted-foreground">
-                Upload a photo/scan of a completed membership form, or take one with your camera. Its fields are read automatically and filled in below, and the passport photo is cropped and attached — review everything before saving.
-              </p>
-              <input ref={scanInputRef} type="file" accept="image/*" onChange={handleScanForm} className="hidden" />
-              <input ref={scanCameraRef} type="file" accept="image/*" capture="environment" onChange={handleScanForm} className="hidden" />
-              <div className="flex flex-wrap gap-3">
-                <button type="button" disabled={scanLoading} onClick={() => scanInputRef.current?.click()} className={OUTLINE_BTN}>
-                  {scanLoading ? "Reading form…" : "Upload form image"}
-                </button>
-                <button type="button" disabled={scanLoading} onClick={() => scanCameraRef.current?.click()} className={OUTLINE_BTN}>
-                  Use camera
-                </button>
-              </div>
-              {scanPct > 0 && (
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm font-semibold text-foreground">
-                    <span>{scanStageLabel(scanPct)}</span>
-                    <span>{scanPct}%</span>
-                  </div>
-                  <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-green-600 transition-all duration-300 ease-out"
-                      style={{ width: `${scanPct}%` }}
-                    />
-                  </div>
+            {aiScanningEntitled && (
+              <fieldset className="space-y-3 rounded-xl bg-green-50 p-4 dark:bg-green-950/40">
+                <legend className="px-1 text-sm font-bold uppercase tracking-wide text-green-800 dark:text-green-200">Scan a hardcopy form</legend>
+                <p className="text-sm text-muted-foreground">
+                  Upload a photo/scan of a completed membership form, or take one with your camera. Its fields are read automatically and filled in below, and the passport photo is cropped and attached — review everything before saving.
+                </p>
+                <input ref={scanInputRef} type="file" accept="image/*" onChange={handleScanForm} className="hidden" />
+                <input ref={scanCameraRef} type="file" accept="image/*" capture="environment" onChange={handleScanForm} className="hidden" />
+                <div className="flex flex-wrap gap-3">
+                  <button type="button" disabled={scanLoading} onClick={() => scanInputRef.current?.click()} className={OUTLINE_BTN}>
+                    {scanLoading ? "Reading form…" : "Upload form image"}
+                  </button>
+                  <button type="button" disabled={scanLoading} onClick={() => scanCameraRef.current?.click()} className={OUTLINE_BTN}>
+                    Use camera
+                  </button>
                 </div>
-              )}
-              {scanError && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">{scanError}</p>}
-              {scanNote && !scanError && <p className="rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-200">{scanNote}</p>}
-              {scannedPassport && !passportFile && (
-                <div className="flex items-center gap-3">
-                  <img src={scannedPassport} alt="Scanned passport" className="h-20 w-20 rounded-lg object-cover" />
-                  <p className="text-sm text-muted-foreground">Passport photo detected and attached.</p>
-                </div>
-              )}
-            </fieldset>
+                {scanPct > 0 && (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm font-semibold text-foreground">
+                      <span>{scanStageLabel(scanPct)}</span>
+                      <span>{scanPct}%</span>
+                    </div>
+                    <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-green-600 transition-all duration-300 ease-out"
+                        style={{ width: `${scanPct}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+                {scanError && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">{scanError}</p>}
+                {scanNote && !scanError && <p className="rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-200">{scanNote}</p>}
+                {scannedPassport && !passportFile && (
+                  <div className="flex items-center gap-3">
+                    <img src={scannedPassport} alt="Scanned passport" className="h-20 w-20 rounded-lg object-cover" />
+                    <p className="text-sm text-muted-foreground">Passport photo detected and attached.</p>
+                  </div>
+                )}
+              </fieldset>
+            )}
             {FIELD_GROUPS.map((group) => (
               <fieldset key={group.title} className="space-y-3">
                 <legend className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{group.title}</legend>

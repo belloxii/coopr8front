@@ -12,6 +12,10 @@ import { Analytics } from "@vercel/analytics/react";
 import Skeleton from '@mui/material/Skeleton'; // Import MUI Skeleton
 import { PLATFORM_NAME } from './config/branding';
 import { useOrganization } from './Utils/useOrganization';
+import PlatformLogin from './Components/Platform/PlatformLogin';
+import PlatformLayout from './Components/Platform/PlatformLayout';
+import PlatformOrganizations from './Components/Platform/PlatformOrganizations';
+import PlatformPlans from './Components/Platform/PlatformPlans';
 
 function App() {
   const [loading, setLoading] = useState(true); // State to manage loading
@@ -59,7 +63,32 @@ function App() {
         </div>
       ) : (
         <Routes>
-          <Route path='/*' element={auth.user?.user ? <HomePage /> : <Authentication />} />
+          {/* Platform super admin routes */}
+          <Route path='/platform/login' element={<PlatformLogin />} />
+          <Route
+            path='/platform/organizations'
+            element={
+              <PlatformLayout>
+                <PlatformOrganizations />
+              </PlatformLayout>
+            }
+          />
+          <Route
+            path='/platform/plans'
+            element={
+              <PlatformLayout>
+                <PlatformPlans />
+              </PlatformLayout>
+            }
+          />
+          <Route
+            path='/platform'
+            element={
+              <PlatformLayout>
+                <PlatformOrganizations />
+              </PlatformLayout>
+            }
+          />
           <Route
             path='/admin/*'
             element={auth.user?.user?.role === "ROLE_ADMIN" ? <AdminHomePage /> : <Authentication />}
@@ -82,6 +111,7 @@ function App() {
           <Route path='/o/:slug/login' element={<Authentication />} />
           <Route path='/o/:slug/signup' element={<Authentication />} />
           <Route path='/o/:slug/forgot-password' element={<Authentication />} />
+          <Route path='/*' element={auth.user?.user ? <HomePage /> : <Authentication />} />
         </Routes>
       )}
       <Analytics />

@@ -58,6 +58,10 @@ export const useOrganization = () => {
     website: text(organization?.website),
     address: text(organization?.address),
 
+    planCode: text(organization?.planCode) || null,
+    aiScanningEntitled: Boolean(organization?.aiScanningEntitled),
+    ecommerceEntitled: Boolean(organization?.ecommerceEntitled),
+
     isLoaded: Boolean(organization),
     loading: Boolean(organizationState?.loading),
 
