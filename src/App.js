@@ -15,7 +15,7 @@ import { useOrganization } from './Utils/useOrganization';
 
 function App() {
   const [loading, setLoading] = useState(true); // State to manage loading
-  const jwt = localStorage.getItem("jwt");
+  const jwt = sessionStorage.getItem("jwt");
   const { auth } = useSelector(store => store);
   const dispatch = useDispatch();
   const { name: orgName, isLoaded: orgLoaded } = useOrganization();

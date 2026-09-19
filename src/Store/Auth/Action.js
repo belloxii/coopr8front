@@ -32,7 +32,7 @@ export const loginUser = (loginData) => async (dispatch) => {
     localStorage.setItem("resCode", responseCode);
 
     if (jwt) {
-      localStorage.setItem("jwt", jwt);
+      sessionStorage.setItem("jwt", jwt);
       dispatch({ type: LOGIN_USER_SUCCESS, payload: jwt });
 
       // Fetch user profile immediately after login
@@ -58,7 +58,7 @@ export const regUser = (regData) => async (dispatch) => {
     localStorage.setItem("resCode", responseCode || "");
 
     if (jwt) {
-      localStorage.setItem("jwt", jwt);
+      sessionStorage.setItem("jwt", jwt);
       dispatch({ type: REGISTER_USER_SUCCESS, payload: jwt });
 
       // Fetch user profile after successful registration
@@ -194,7 +194,7 @@ export const changePass = (data) => async (dispatch) => {
 // change the default password on first login (no OTP required)
 export const changeDefaultPass = (data) => async (dispatch) => {
   try {
-    const jwt = localStorage.getItem("jwt");
+    const jwt = sessionStorage.getItem("jwt");
     const res = await axios.put(
       `${API_BASE_URL}/api/auth/change-default-pass`,
       data,
@@ -219,7 +219,7 @@ export const changeDefaultPass = (data) => async (dispatch) => {
 
 // LOGOUT
 export const logout = () => (dispatch) => {
-  localStorage.removeItem("jwt");
+  sessionStorage.removeItem("jwt");
   localStorage.removeItem("resMsg");
   localStorage.removeItem("resCode");
   dispatch({ type: LOGOUT });

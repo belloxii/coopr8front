@@ -229,7 +229,7 @@ const scanFormImage = async (file) => {
   const form = new FormData();
   form.append("file", blob, "form.jpg");
   const response = await axios.post(`${API_BASE_URL}/api/admin/forms/scan`, form, {
-    headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+    headers: { Authorization: `Bearer ${sessionStorage.getItem("jwt")}` },
   });
   return response.data;
 };

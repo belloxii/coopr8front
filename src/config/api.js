@@ -23,7 +23,7 @@ export const api = axios.create({
  * organization-branding fetch on the login page can deliberately send none.
  */
 api.interceptors.request.use((config) => {
-    const jwt = localStorage.getItem("jwt");
+    const jwt = sessionStorage.getItem("jwt");
     if (jwt && !config.headers.Authorization) {
         config.headers.Authorization = `Bearer ${jwt}`;
     }
@@ -47,7 +47,7 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error?.response?.status === 401) {
-            localStorage.removeItem("jwt");
+            sessionStorage.removeItem("jwt");
         }
         return Promise.reject(error);
     }

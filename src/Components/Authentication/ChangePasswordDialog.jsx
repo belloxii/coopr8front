@@ -81,7 +81,7 @@ const ChangePasswordDialog = ({ open, onClose }) => {
 
         if (resCode === "100") {
           // Success - refresh profile to clear requiresPasswordChange flag
-          const jwt = localStorage.getItem("jwt");
+          const jwt = sessionStorage.getItem("jwt");
           await dispatch(getUserProfile(jwt));
 
           setSuccess(resMsg || "Password changed successfully!");

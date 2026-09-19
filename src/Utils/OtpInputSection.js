@@ -86,7 +86,7 @@ const OtpInputSection = ({ email, organization, action, onOtpValidated }) => {
 
   useEffect(() => {
     if (onOtpValidated) {
-      onOtpValidated(otpValid);
+      onOtpValidated(otpValid ? otp : "");
     }
   }, [otpValid, onOtpValidated]);
 
@@ -136,7 +136,7 @@ const OtpInputSection = ({ email, organization, action, onOtpValidated }) => {
             label="Enter OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
-            inputProps={{ maxLength: 5 }}
+            inputProps={{ maxLength: 6, inputMode: "numeric" }}
             sx={{ mt: 2, ...filledFieldSx }}
             InputProps={filledInputProps}
           />
@@ -157,7 +157,7 @@ const OtpInputSection = ({ email, organization, action, onOtpValidated }) => {
             <Button
               variant="text"
               onClick={handleValidateOtp}
-              disabled={!otp || otp.length < 5 || otpLoading || otpValid}
+              disabled={!otp || otp.length < 6 || otpLoading || otpValid}
               sx={{
                 borderRadius: "999px",
                 px: 3,

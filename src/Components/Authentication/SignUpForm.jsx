@@ -48,7 +48,7 @@ const SignUpForm = ({ organizationSlug }) => {
   });
   const [passportFile, setPassportFile] = useState(null);
   const [uploadError, setUploadError] = useState("");
-  const [otpValid, setOtpValid] = useState(false);
+  const [verifiedOtp, setVerifiedOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState({ open: false, code: "", message: "" });
 
@@ -63,7 +63,7 @@ const SignUpForm = ({ organizationSlug }) => {
 
   const handleChange = ({ target: { name, value } }) => {
     setFormData((current) => ({ ...current, [name]: value }));
-    if (name === "email") setOtpValid(false);
+    if (name === "email") setVerifiedOtp("");
   };
 
   const stepIsValid = () => {
@@ -75,7 +75,7 @@ const SignUpForm = ({ organizationSlug }) => {
       if (isTescomStaff === "yes") return Boolean(psn);
       return Boolean(occupation);
     }
-    if (activeStep === 1) return Boolean(formData.email && formData.phone && formData.address && otpValid);
+    if (activeStep === 1) return Boolean(formData.email && formData.phone && formData.address && verifiedOtp);
     return Boolean(formData.savingPlan && Number(formData.savingPlan) > 0 && passportFile);
   };
 
@@ -91,6 +91,9 @@ const SignUpForm = ({ organizationSlug }) => {
   const uploadPassport = async () => {
     const uploadData = new FormData();
     uploadData.append("image", passportFile);
+    uploadData.append("organization", organizationSlug || "");
+    uploadData.append("email", formData.email);
+    uploadData.append("otp", verifiedOtp);
     const response = await axios.post(`${API_BASE_URL}/api/images/upload`, uploadData);
     if (!response.data?.url) throw new Error("Passport upload did not return an image URL.");
     return response.data.url;
@@ -115,6 +118,7 @@ const SignUpForm = ({ organizationSlug }) => {
         address: formData.address,
         passport,
         savingPlan: Number(formData.savingPlan),
+        otp: verifiedOtp,
       };
       // Add PSN or occupation based on TESCOM staff status
       if (formData.isTescomStaff === "yes") {
@@ -152,15 +156,15 @@ const SignUpForm = ({ organizationSlug }) => {
       <TextField fullWidth required type="email" label="Email address" name="email" value={formData.email} onChange={handleChange} sx={fieldSx} {...fieldProps} />
       <TextField fullWidth required type="tel" label="Phone number" name="phone" value={formData.phone} onChange={handleChange} sx={fieldSx} {...fieldProps} />
       <TextField fullWidth required multiline minRows={2} label="Residential address" name="address" value={formData.address} onChange={handleChange} sx={fieldSx} {...fieldProps} />
-      <Paper elevation={0} sx={{ p: 2, ...authPanelSx }}><Typography variant="subtitle2" sx={{ mb: 1 }}>Verify your email</Typography><Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>We use a one-time code to confirm your email before creating your account.</Typography><OtpInputSection key={formData.email} email={formData.email} organization={organizationSlug} action="signup" onOtpValidated={setOtpValid} /></Paper>
+      <Paper elevation={0} sx={{ p: 2, ...authPanelSx }}><Typography variant="subtitle2" sx={{ mb: 1 }}>Verify your email</Typography><Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>We use a one-time code to confirm your email before creating your account.</Typography><OtpInputSection key={formData.email} email={formData.email} organization={organizationSlug} action="signup" onOtpValidated={setVerifiedOtp} /></Paper>
     </Box>;
 
     return <Box className="space-y-5">
       <TextField fullWidth required label="Monthly savings plan (₦)" name="savingPlan" type="number" value={formData.savingPlan} onChange={handleChange} inputProps={{ min: 1 }} sx={fieldSx} {...fieldProps} />
       <Paper elevation={0} sx={{ p: 2.5, ...authPanelSx, textAlign: "center" }}>
         {previewUrl ? <Box><img src={previewUrl} alt="Passport preview" className="mx-auto mb-3 h-28 w-28 rounded-full object-cover ring-4 ring-green-100" /><Typography variant="body2" sx={{ mb: 1 }}>{passportFile.name}</Typography></Box> : <CloudUploadOutlinedIcon sx={{ fontSize: 42, color: green[700], mb: 1 }} />}
-        <Typography fontWeight={700}>Upload passport photograph</Typography><Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>JPG, PNG, or WEBP — maximum 5 MB.</Typography>
-        <Button component="label" variant="text" startIcon={<CloudUploadOutlinedIcon />} sx={{ borderRadius: 2, textTransform: "none", color: green[700], bgcolor: (theme) => theme.palette.mode === "dark" ? "rgba(47,191,107,0.14)" : "rgba(31,166,90,0.10)", "&:hover": { bgcolor: (theme) => theme.palette.mode === "dark" ? "rgba(47,191,107,0.22)" : "rgba(31,166,90,0.18)" } }}>Choose image<input hidden type="file" accept="image/png,image/jpeg,image/webp" onChange={selectPassport} /></Button>
+        <Typography fontWeight={700}>Upload passport photograph</Typography><Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>JPG or PNG — maximum 5 MB.</Typography>
+        <Button component="label" variant="text" startIcon={<CloudUploadOutlinedIcon />} sx={{ borderRadius: 2, textTransform: "none", color: green[700], bgcolor: (theme) => theme.palette.mode === "dark" ? "rgba(47,191,107,0.14)" : "rgba(31,166,90,0.10)", "&:hover": { bgcolor: (theme) => theme.palette.mode === "dark" ? "rgba(47,191,107,0.22)" : "rgba(31,166,90,0.18)" } }}>Choose image<input hidden type="file" accept="image/png,image/jpeg" onChange={selectPassport} /></Button>
         {uploadError && <Alert severity="error" sx={{ mt: 2, textAlign: "left" }}>{uploadError}</Alert>}
       </Paper>
       <Alert icon={<CheckCircleRoundedIcon />} severity="success" sx={{ borderRadius: 3 }}>Your passport is uploaded securely when you create the account.</Alert>
