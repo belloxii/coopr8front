@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
 import Authentication from './Components/Authentication/Authentication';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile } from './Store/Auth/Action';
 import { getCurrentOrganization } from './Store/Organization/Action';
@@ -12,11 +12,11 @@ import { Analytics } from "@vercel/analytics/react";
 import Skeleton from '@mui/material/Skeleton'; // Import MUI Skeleton
 import { PLATFORM_NAME } from './config/branding';
 import { useOrganization } from './Utils/useOrganization';
-import PlatformLogin from './Components/Platform/PlatformLogin';
-import PlatformLayout from './Components/Platform/PlatformLayout';
-import PlatformOrganizations from './Components/Platform/PlatformOrganizations';
-import PlatformPlans from './Components/Platform/PlatformPlans';
-import LandingPage from './Components/Landing/LandingPage';
+const PlatformLogin = lazy(() => import('./Components/Platform/PlatformLogin'));
+const PlatformLayout = lazy(() => import('./Components/Platform/PlatformLayout'));
+const PlatformOrganizations = lazy(() => import('./Components/Platform/PlatformOrganizations'));
+const PlatformPlans = lazy(() => import('./Components/Platform/PlatformPlans'));
+const LandingPage = lazy(() => import('./Components/Landing/LandingPage'));
 
 function App() {
   const [loading, setLoading] = useState(true); // State to manage loading
@@ -63,7 +63,14 @@ function App() {
           <Skeleton variant="rectangular" width="100%" height="100vh" />
         </div>
       ) : (
-        <Routes>
+        <Suspense
+          fallback={
+            <div className="skeleton-loader">
+              <Skeleton variant="rectangular" width="100%" height="100vh" />
+            </div>
+          }
+        >
+          <Routes>
           {/* Base URL: Landing Page for visitors; dashboard redirect if already logged in */}
           <Route
             path='/'
@@ -129,6 +136,7 @@ function App() {
           <Route path='/o/:slug/forgot-password' element={<Authentication />} />
           <Route path='/*' element={auth.user?.user ? <HomePage /> : <Authentication />} />
         </Routes>
+        </Suspense>
       )}
       <Analytics />
     </div>
