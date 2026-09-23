@@ -59,7 +59,7 @@ const SignUpForm = ({ organizationSlug }) => {
 
   // Sign-in links keep the cooperative in the path, so a new member who arrived at
   // /o/{slug}/signup lands back on their own cooperative's login page.
-  const loginPath = organizationSlug ? `/o/${organizationSlug}/login` : "/login";
+  const loginPath = `/o/${organizationSlug}/login`;
 
   const handleChange = ({ target: { name, value } }) => {
     setFormData((current) => ({ ...current, [name]: value }));
@@ -91,7 +91,7 @@ const SignUpForm = ({ organizationSlug }) => {
   const uploadPassport = async () => {
     const uploadData = new FormData();
     uploadData.append("image", passportFile);
-    uploadData.append("organization", organizationSlug || "");
+    uploadData.append("organization", organizationSlug);
     uploadData.append("email", formData.email);
     uploadData.append("otp", verifiedOtp);
     const response = await axios.post(`${API_BASE_URL}/api/images/upload`, uploadData);

@@ -14,6 +14,8 @@ import { PLATFORM_NAME } from './config/branding';
 import { useOrganization } from './Utils/useOrganization';
 import { usePublicOrganization } from './Utils/usePublicOrganization';
 import { useApplyTenantTheme } from './Utils/useApplyTenantTheme';
+import OrganizationSelector from './Components/Organizations/OrganizationSelector';
+import OrganizationNotFound from './Components/Organizations/OrganizationNotFound';
 const PlatformLogin = lazy(() => import('./Components/Platform/PlatformLogin'));
 const PlatformLayout = lazy(() => import('./Components/Platform/PlatformLayout'));
 const PlatformOrganizations = lazy(() => import('./Components/Platform/PlatformOrganizations'));
@@ -48,7 +50,6 @@ function App() {
   useApplyTenantTheme(effectivePrimaryColor);
 
   useEffect(() => {
-    console.log("Fetching user profile...");
     if (jwt) {
       setLoading(true); // Set loading to true when fetching user profile
       dispatch(getUserProfile(jwt))
@@ -109,7 +110,7 @@ function App() {
             }
           />
           {/* Platform super admin routes */}
-          <Route path='/platform/login' element={<PlatformLogin />} />
+          <Route path='/platform/login' element={<Navigate to="/login" replace />} />
           <Route
             path='/platform/organizations'
             element={
@@ -139,9 +140,10 @@ function App() {
             element={auth.user?.user?.role === "ROLE_ADMIN" ? <AdminHomePage /> : <Authentication />}
           />
           <Route path='/verify/*' element={auth.user ? <VerifyPayment /> : <Authentication />} />
-          <Route path='/login' element={<Authentication />} />
-          <Route path='/signup' element={<Authentication />} />
-          <Route path='/forgot-password' element={<Authentication />} />
+          <Route path='/login' element={<PlatformLogin />} />
+          <Route path='/organizations' element={<OrganizationSelector />} />
+          <Route path='/onboard' element={<OrganizationSelector onboarding />} />
+          <Route path='/billing' element={<Navigate to="/onboard" replace />} />
 
           {/*
             The organization-specific entry points. `/o/{slug}/login` is how a member normally
@@ -149,14 +151,14 @@ function App() {
             membership number up in, so two cooperatives can both issue a number 0001 without
             either login becoming ambiguous.
 
-            The slug-less routes above still work. They fall back to deriving the cooperative from
-            the membership number's own prefix, which is what keeps existing members -- who have
-            bookmarked /login -- able to sign in.
+            Membership authentication is never available on a slug-less route. `/login` belongs
+            only to platform administrators; members must start from the organization selector.
           */}
           <Route path='/o/:slug/login' element={<Authentication />} />
           <Route path='/o/:slug/signup' element={<Authentication />} />
           <Route path='/o/:slug/forgot-password' element={<Authentication />} />
-          <Route path='/*' element={auth.user?.user ? <HomePage /> : <Authentication />} />
+          <Route path='/organization-not-found' element={<OrganizationNotFound />} />
+          <Route path='/*' element={auth.user?.user ? <HomePage /> : <Navigate to="/organizations" replace />} />
         </Routes>
         </Suspense>
       )}

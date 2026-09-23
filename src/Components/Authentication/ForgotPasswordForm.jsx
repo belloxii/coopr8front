@@ -32,7 +32,7 @@ import {
  *
  * 1. **The cooperative is part of the request.** Reset is never "the account with this email" --
  *    the same address can belong to a member of more than one cooperative. On /o/{slug}/... the
- *    slug supplies it; on plain /forgot-password the member's own membership number prefix does.
+ *    slug supplies it; password reset is unavailable without that tenant identity.
  *
  * 2. **Step 1's answer is the same either way.** Whether or not that member exists, the message is
  *    identical, so this form cannot be used to find out who belongs to a cooperative. That is why
@@ -58,9 +58,7 @@ const ForgotPasswordForm = ({ organizationSlug }) => {
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
 
-  const loginPath = organizationSlug
-    ? `/o/${organizationSlug}/login`
-    : "/login";
+  const loginPath = `/o/${organizationSlug}/login`;
 
   const handleRequest = async (e) => {
     e.preventDefault();

@@ -9,15 +9,11 @@ import ForgotPasswordForm from "./ForgotPasswordForm";
 import { useTheme } from "../../theme/ThemeContext";
 import { PLATFORM_NAME, PLATFORM_TAGLINE, PLATFORM_VENDOR } from "../../config/branding";
 import { usePublicOrganization } from "../../Utils/usePublicOrganization";
+import OrganizationNotFound from "../Organizations/OrganizationNotFound";
 
 // This page renders BEFORE authentication. Which cooperative a visitor belongs to is therefore
-// known only when the URL says so: `/o/{slug}/login` names one, plain `/login` does not.
-//
-// With a slug, the public branding endpoint supplies that cooperative's name and logo so the
-// member can see whose login page they are on -- and the slug is passed to the forms, which send
-// it as the `organization` field. Without one, the page stays neutral COOPR8 platform branding and
-// says nothing about any particular cooperative; the backend then falls back to deriving the
-// cooperative from the membership number's prefix.
+// known only when the URL says so: `/o/{slug}/login` names one. The platform's `/login` is a
+// separate super-admin page, so a member route cannot silently guess a cooperative.
 const images = [
   {
     src: "https://res.cloudinary.com/ddyzfnmnk/image/upload/v1739675374/89614748-cbfb-4dbb-9629-a57f1d0383e4_lyonma.webp",
@@ -46,6 +42,10 @@ const Authentication = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { organization, notFound } = usePublicOrganization(slug);
 
+  if (!slug || notFound) {
+    return <OrganizationNotFound />;
+  }
+
   useEffect(() => {
     const interval = setInterval(
       () => setCurrentIndex((prev) => (prev + 1) % images.length),
@@ -68,8 +68,8 @@ const Authentication = () => {
   // A slug that no cooperative claims -- or one whose cooperative is suspended -- gets platform
   // branding, not a guess. `notFound` is also the reason nothing here says "this cooperative does
   // not exist": an unauthenticated visitor should not be able to probe which slugs are real.
-  const loginPath = slug ? `/o/${slug}/login` : "/login";
-  const showTenant = Boolean(organization?.name) && !notFound;
+  const loginPath = `/o/${slug}/login`;
+  const showTenant = Boolean(organization?.name);
 
   // Set document title according to tenant branding and restore on unmount
   useEffect(() => {

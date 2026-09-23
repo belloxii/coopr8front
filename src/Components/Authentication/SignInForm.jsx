@@ -39,11 +39,16 @@ const SignInForm = ({ organizationSlug }) => {
   // Keeps the member inside the cooperative they arrived at: from /o/{slug}/login, "Forgot
   // Password?" and "Create Account" must not drop the slug, or the next page would no longer know
   // which cooperative it is for.
-  const within = (page) =>
-    organizationSlug ? `/o/${organizationSlug}/${page}` : `/${page}`;
+  const within = (page) => `/o/${organizationSlug}/${page}`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!organizationSlug) {
+      setResponseCode("error");
+      setResponseText("Choose your organization before signing in.");
+      setPopupOpen(true);
+      return;
+    }
 
     setLoading(true);
     setPopupOpen(true);
@@ -53,10 +58,7 @@ const SignInForm = ({ organizationSlug }) => {
     try {
       await dispatch(
         loginUser({
-          // Which cooperative to look this membership number up in. Present when the member
-          // arrived at /o/{slug}/login, which is the normal path. Omitted on plain /login, where
-          // the backend falls back to the number's own prefix -- that fallback resolves a single
-          // cooperative or fails, and it never widens a slug that was supplied here.
+          // The tenant comes from the selected cooperative's route; no ledger-prefix discovery.
           organization: organizationSlug,
           ledgerID,
           password,
