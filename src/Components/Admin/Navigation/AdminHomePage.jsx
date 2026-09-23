@@ -22,6 +22,7 @@ import AdminProfile from "../Pages/AdminUsers/Profile/AdminProfile";
 import OrgBrand from "../../Branding/OrgBrand";
 import { PLATFORM_ATTRIBUTION } from "../../../config/branding";
 import { useOrganization } from "../../../Utils/useOrganization";
+import TenantSettings from "../Pages/Settings/TenantSettings";
 
 const AdminHomePage = () => {
   const { auth } = useSelector((store) => store);
@@ -147,6 +148,7 @@ const AdminHomePage = () => {
             <Route path="/orders" element={<Orders />} />
             <Route path="/purchases" element={<Purchases />} />
             <Route path="/shares" element={<Shares />} />
+            <Route path="/settings" element={<TenantSettings />} />
             <Route path="/loans/:loanId" element={<AdminLoanDetails />} />
             <Route path="/users/profile/:userId" element={<AdminProfile />} />
             <Route path="/users/add-user" element={<AddUserPage />} />

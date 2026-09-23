@@ -22,20 +22,6 @@ import {
 } from "./ActionType";
 import { api } from "../../config/api";
 
-// Add shares (credit)
-export const addShare = (shareData) => async (dispatch) => {
-  try {
-    dispatch({ type: ADD_SHARE_REQUEST });
-    const { data } = await api.post(`/api/shares/add`, shareData);
-    dispatch({ type: ADD_SHARE_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: ADD_SHARE_FAILURE,
-      payload: error?.response?.data?.message || "Add Share Failed",
-    });
-  }
-};
-
 // Withdraw shares (debit)
 export const withdrawShare = (shareData) => async (dispatch) => {
   try {

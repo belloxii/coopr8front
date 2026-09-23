@@ -77,8 +77,6 @@ function App() {
     }
   }, [isAuthenticated, orgLoaded, orgName, routeSlug]);
 
-  console.log("auth.user", auth.user);
-
   return (
     <div className="App">
       {loading ? (
